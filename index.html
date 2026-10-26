@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Witold Dubus · Links</title>
 <meta name="description" content="Projects, dashboards and channels by Witold Dubus: EU cooperation project manager, Barcelona.">
+<meta property="og:title" content="Witold Dubus · Links">
+<meta property="og:description" content="EU cooperation project manager in Barcelona. Projects, dashboards, weekly plans channels and contact.">
+<meta property="og:url" content="https://sneakysquidz.github.io/">
+<meta property="og:type" content="profile">
+<meta name="twitter:card" content="summary">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2244%22 fill=%22%23234e8c%22/%3E%3Ctext x=%2250%22 y=%2264%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22sans-serif%22%3EWD%3C/text%3E%3C/svg%3E">
 <style>
@@ -44,9 +49,21 @@ a.link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   padding:1px 8px;border-radius:99px;background:var(--tag);color:var(--muted);margin-left:6px;vertical-align:2px}
 .notes span.pill{display:inline-block;font-size:11px}
 .notes a{color:var(--accent)}
-.qr{display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:10px}
-.qr span{color:var(--muted);font-size:14px}
-#qr{background:#fff;padding:10px;border-radius:8px;line-height:0}
+.cta{display:flex;gap:10px;justify-content:center;margin-top:18px}
+.btn{flex:1;max-width:170px;text-align:center;text-decoration:none;font-weight:600;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.btn:hover{filter:brightness(1.08)}
+details summary{cursor:pointer;color:var(--muted);font-size:14px;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
+.qrbox{margin-top:14px}
+#qr{display:inline-block;background:#fff;padding:12px;border-radius:10px;line-height:0;margin-top:10px}
+.howto{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:10px}
+.howto ol{margin:8px 0 0;padding-left:20px;color:var(--muted);font-size:14px}
+.hint{color:var(--muted);font-size:14px;margin:-4px 0 10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips a{text-decoration:none;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:99px;padding:8px 14px;font-size:15px}
+.chips a:hover{background:var(--card-hover)}
 footer{text-align:center;color:var(--muted);font-size:13px;margin-top:36px}
 </style>
 </head>
@@ -55,10 +72,17 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:36px}
 <header>
   <div class="avatar" aria-hidden="true">WD</div>
   <h1>Witold Dubus</h1>
-  <p class="tagline">EU international cooperation project manager, based in Barcelona. On the side I build sites, dashboards and small tools.</p>
+  <p class="tagline">EU international cooperation project manager in Barcelona. On the side I build sites, dashboards and small tools.</p>
+  <div class="cta">
+    <a class="btn primary" href="https://www.linkedin.com/in/witolddubus" target="_blank" rel="noopener">LinkedIn</a>
+    <a class="btn" href="https://wa.me/34679678780?text=Hi%20Witold%2C%20I%20found%20you%20via%20your%20links%20page." target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+  <details class="qrbox"><summary>Show LinkedIn QR</summary>
+    <div id="qr" role="img" aria-label="QR code linking to my LinkedIn profile"></div>
+  </details>
 </header>
 
-<h2>Finished projects</h2>
+<h2>Projects</h2>
 <a class="link" href="https://aurorabalearis.com" target="_blank" rel="noopener">
   <div class="ico" aria-hidden="true">🌅</div>
   <div class="txt"><b>Aurora Balearis</b><span>My Balearic travel and photography site</span></div><div class="arrow">↗</div>
@@ -71,46 +95,35 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:36px}
   <div class="ico" aria-hidden="true">🌊</div>
   <div class="txt"><b>MedSEAS</b><span>A data dashboard of the Mediterranean's sub-basins</span></div><div class="arrow">↗</div>
 </a>
+<a class="link" href="https://sneakysquidz.github.io/ExpertDesk/" target="_blank" rel="noopener">
+  <div class="ico" aria-hidden="true">🧮</div>
+  <div class="txt"><b>EU per diem tool</b><span>Free per diem and exchange-rate lookup for EU-funded missions</span></div><div class="arrow">↗</div>
+</a>
 
-<h2>What's on: Telegram channels</h2>
-<ul class="notes" style="margin:0 0 10px">
-  <li><b>How to join</b><span>1. Install Telegram (free, phone or desktop) and sign in.<br>2. Tap a channel below. It opens in Telegram.<br>3. BCN and Paris: tap <i>Request to join</i>. You're approved automatically, usually within minutes. Zako: tap <i>Join</i>.<br>4. A new brief arrives every Friday. Mute or leave whenever you like.</span></li>
-</ul>
+<h2>Travel &amp; weekly plans</h2>
+<p class="hint">Free weekly "what's on" briefs on Telegram, every Friday.</p>
 <a class="link" href="https://t.me/+rJIYs0WjeEZmZDJk" target="_blank" rel="noopener">
   <div class="ico" aria-hidden="true">🏛️</div>
-  <div class="txt"><b>BCN Plans</b><span>Weekly Barcelona brief: heritage, markets, free culture, day trips</span></div><div class="arrow">↗</div>
+  <div class="txt"><b>BCN Plans</b><span>Barcelona: heritage, markets, free culture, day trips</span></div><div class="arrow">↗</div>
 </a>
 <a class="link" href="https://t.me/+VxiyhuU3lhU5NjNk" target="_blank" rel="noopener">
   <div class="ico" aria-hidden="true">🥐</div>
-  <div class="txt"><b>Paris Plans</b><span>Weekly Paris brief: exhibitions, free museum days, markets</span></div><div class="arrow">↗</div>
+  <div class="txt"><b>Paris Plans</b><span>Paris: exhibitions, free museum days, markets</span></div><div class="arrow">↗</div>
 </a>
 <a class="link" href="https://t.me/+W5Bu_GFZlQA4ZTRk" target="_blank" rel="noopener">
   <div class="ico" aria-hidden="true">🏔️</div>
   <div class="txt"><b>Zako Plans</b><span>Zakopane and the Tatras: walks, highlander heritage, events</span></div><div class="arrow">↗</div>
 </a>
-
-<h2>Travel guides</h2>
+<details class="howto"><summary>How to join a channel</summary>
+  <ol><li>Install Telegram (free) and sign in.</li><li>Tap a channel above. It opens in Telegram.</li><li>BCN and Paris: tap <i>Request to join</i>, and you'll be approved shortly. Zako: tap <i>Join</i>.</li><li>Mute or leave whenever you like.</li></ol>
+</details>
 <a class="link" href="https://exploretatra.com" target="_blank" rel="noopener">
   <div class="ico" aria-hidden="true">⛰️</div>
-  <div class="txt"><b>Explore Tatra</b><span>Zakopane and the Tatras: trails, stays and tours</span></div><div class="arrow">↗</div>
+  <div class="txt"><b>Explore Tatra</b><span>Guide: trails, stays and tours around Zakopane</span></div><div class="arrow">↗</div>
 </a>
 <a class="link" href="https://menorcaplan.com" target="_blank" rel="noopener">
   <div class="ico" aria-hidden="true">🏝️</div>
-  <div class="txt"><b>Menorca Plan</b><span>Beaches, Talayotic heritage and what to book in Menorca</span></div><div class="arrow">↗</div>
-</a>
-
-<h2>Instagram</h2>
-<a class="link" href="https://www.instagram.com/aurorabalearis/" target="_blank" rel="noopener">
-  <div class="ico" aria-hidden="true">📷</div>
-  <div class="txt"><b>@aurorabalearis</b><span>Balearic photography</span></div><div class="arrow">↗</div>
-</a>
-<a class="link" href="https://www.instagram.com/spacepr0ducer/" target="_blank" rel="noopener">
-  <div class="ico" aria-hidden="true">🎛️</div>
-  <div class="txt"><b>@spacepr0ducer</b><span>Creative projects</span></div><div class="arrow">↗</div>
-</a>
-<a class="link" href="https://www.instagram.com/witolddub/" target="_blank" rel="noopener">
-  <div class="ico" aria-hidden="true">🙂</div>
-  <div class="txt"><b>@witolddub</b><span>Personal</span></div><div class="arrow">↗</div>
+  <div class="txt"><b>Menorca Plan</b><span>Guide: beaches, Talayotic heritage, what to book</span></div><div class="arrow">↗</div>
 </a>
 
 <!-- Reserved slot: hidden until ready. To show it, remove the "hidden" attribute and set the href.
@@ -120,26 +133,16 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:36px}
 </a>
 -->
 
-<h2>Work &amp; contact</h2>
-<a class="link" href="https://www.linkedin.com/in/witolddubus" target="_blank" rel="noopener">
-  <div class="ico" aria-hidden="true">💼</div>
-  <div class="txt"><b>LinkedIn</b><span>EU technical assistance, migration, Interreg, heritage</span></div><div class="arrow">↗</div>
-</a>
-
-<a class="link" href="https://wa.me/34679678780" target="_blank" rel="noopener">
-  <div class="ico" aria-hidden="true">💬</div>
-  <div class="txt"><b>WhatsApp</b><span>Message me directly</span></div><div class="arrow">↗</div>
-</a>
-<div class="qr">
-  <div id="qr" role="img" aria-label="QR code linking to my LinkedIn profile"></div>
-  <span>Scan for my LinkedIn</span>
+<h2>Instagram</h2>
+<div class="chips">
+  <a href="https://www.instagram.com/aurorabalearis/" target="_blank" rel="noopener">📷 @aurorabalearis</a>
+  <a href="https://www.instagram.com/spacepr0ducer/" target="_blank" rel="noopener">🎛️ @spacepr0ducer</a>
+  <a href="https://www.instagram.com/witolddub/" target="_blank" rel="noopener">🙂 @witolddub</a>
 </div>
 
-<h2>Ongoing &amp; brainstorming</h2>
+<h2>In progress</h2>
 <ul class="notes">
-  <li><b>Expert Desk</b><span class="pill">ongoing</span><span>A compliance helper for experts and firms in EU cooperation consulting. First piece live: a free <a href="https://sneakysquidz.github.io/ExpertDesk/" target="_blank" rel="noopener">EU per diem and exchange-rate tool</a>.</span></li>
-  <li><b>More travel guides</b><span class="pill">idea</span><span>New destinations once the Tatra and Menorca guides grow.</span></li>
-  <li><b>More cities for the plans briefs</b><span class="pill">idea</span><span>The same weekly format, extended to new regions.</span></li>
+  <li><b>Expert Desk</b><span class="pill">ongoing</span><span>A compliance helper for experts and firms in EU cooperation consulting. The per diem tool above is its first piece.</span></li>
   <li><b>Prints from Aurora Balearis</b><span class="pill">idea</span><span>A small shop for photo prints.</span></li>
 </ul>
 
@@ -147,8 +150,8 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:36px}
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-try{new QRCode(document.getElementById("qr"),{text:"https://www.linkedin.com/in/witolddubus",width:160,height:160,correctLevel:QRCode.CorrectLevel.M})}
-catch(e){document.querySelector(".qr").hidden=true}
+try{new QRCode(document.getElementById("qr"),{text:"https://www.linkedin.com/in/witolddubus",width:180,height:180,correctLevel:QRCode.CorrectLevel.M})}
+catch(e){document.querySelector(".qrbox").hidden=true}
 </script>
 </body>
 </html>
