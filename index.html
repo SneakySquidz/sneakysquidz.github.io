@@ -42,7 +42,11 @@ a.link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .notes span{display:block;color:var(--muted);font-size:14px}
 .pill{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
   padding:1px 8px;border-radius:99px;background:var(--tag);color:var(--muted);margin-left:6px;vertical-align:2px}
+.notes span.pill{display:inline-block;font-size:11px}
 .notes a{color:var(--accent)}
+.qr{display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:10px}
+.qr span{color:var(--muted);font-size:14px}
+#qr{background:#fff;padding:10px;border-radius:8px;line-height:0}
 footer{text-align:center;color:var(--muted);font-size:13px;margin-top:36px}
 </style>
 </head>
@@ -85,21 +89,66 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:36px}
   <div class="txt"><b>Zako Plans</b><span>Zakopane and the Tatras: walks, highlander heritage, events</span></div><div class="arrow">↗</div>
 </a>
 
-<h2>Work</h2>
+<h2>Travel guides</h2>
+<a class="link" href="https://exploretatra.com" target="_blank" rel="noopener">
+  <div class="ico" aria-hidden="true">⛰️</div>
+  <div class="txt"><b>Explore Tatra</b><span>Zakopane and the Tatras: trails, stays and tours</span></div><div class="arrow">↗</div>
+</a>
+<a class="link" href="https://menorcaplan.com" target="_blank" rel="noopener">
+  <div class="ico" aria-hidden="true">🏝️</div>
+  <div class="txt"><b>Menorca Plan</b><span>Beaches, Talayotic heritage and what to book in Menorca</span></div><div class="arrow">↗</div>
+</a>
+
+<h2>Instagram</h2>
+<a class="link" href="https://www.instagram.com/aurorabalearis/" target="_blank" rel="noopener">
+  <div class="ico" aria-hidden="true">📷</div>
+  <div class="txt"><b>@aurorabalearis</b><span>Balearic photography</span></div><div class="arrow">↗</div>
+</a>
+<a class="link" href="https://www.instagram.com/spacepr0ducer/" target="_blank" rel="noopener">
+  <div class="ico" aria-hidden="true">🎛️</div>
+  <div class="txt"><b>@spacepr0ducer</b><span>Creative projects</span></div><div class="arrow">↗</div>
+</a>
+<a class="link" href="https://www.instagram.com/witolddub/" target="_blank" rel="noopener">
+  <div class="ico" aria-hidden="true">🙂</div>
+  <div class="txt"><b>@witolddub</b><span>Personal</span></div><div class="arrow">↗</div>
+</a>
+
+<!-- Sun Radio: hidden until ready. To show it, remove the "hidden" attribute and set the href.
+<a class="link" href="#" target="_blank" rel="noopener" hidden>
+  <div class="ico" aria-hidden="true">📻</div>
+  <div class="txt"><b>Sun Radio</b><span>Community radio, Novi Sad</span></div><div class="arrow">↗</div>
+</a>
+-->
+
+<h2>Work &amp; contact</h2>
 <a class="link" href="https://www.linkedin.com/in/witolddubus" target="_blank" rel="noopener">
   <div class="ico" aria-hidden="true">💼</div>
   <div class="txt"><b>LinkedIn</b><span>EU technical assistance, migration, Interreg, heritage</span></div><div class="arrow">↗</div>
 </a>
 
+<a class="link" href="https://wa.me/34679678780" target="_blank" rel="noopener">
+  <div class="ico" aria-hidden="true">💬</div>
+  <div class="txt"><b>WhatsApp</b><span>Message me directly</span></div><div class="arrow">↗</div>
+</a>
+<div class="qr">
+  <div id="qr" role="img" aria-label="QR code linking to my LinkedIn profile"></div>
+  <span>Scan for my LinkedIn</span>
+</div>
+
 <h2>Ongoing &amp; brainstorming</h2>
 <ul class="notes">
   <li><b>Expert Desk</b><span class="pill">ongoing</span><span>A compliance helper for experts and firms in EU cooperation consulting. First piece live: a free <a href="https://sneakysquidz.github.io/ExpertDesk/" target="_blank" rel="noopener">EU per diem and exchange-rate tool</a>.</span></li>
-  <li><b>Travel guides</b><span class="pill">ongoing</span><span>Independent guides to the <a href="https://exploretatra.com" target="_blank" rel="noopener">Tatras</a> and <a href="https://menorcaplan.com" target="_blank" rel="noopener">Menorca</a>, with more destinations once these two grow.</span></li>
+  <li><b>More travel guides</b><span class="pill">idea</span><span>New destinations once the Tatra and Menorca guides grow.</span></li>
   <li><b>More cities for the plans briefs</b><span class="pill">idea</span><span>The same weekly format, extended to new regions.</span></li>
   <li><b>Prints from Aurora Balearis</b><span class="pill">idea</span><span>A small shop for photo prints.</span></li>
 </ul>
 
 <footer>Made in Barcelona · hosted on GitHub Pages</footer>
 </main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+try{new QRCode(document.getElementById("qr"),{text:"https://www.linkedin.com/in/witolddubus",width:160,height:160,correctLevel:QRCode.CorrectLevel.M})}
+catch(e){document.querySelector(".qr").hidden=true}
+</script>
 </body>
 </html>
