@@ -31,7 +31,7 @@ header{text-align:center;margin-bottom:28px}
   background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-weight:700;font-size:28px;letter-spacing:.02em}
 h1{font-size:24px;margin:0 0 4px}
 .tagline{color:var(--muted);margin:0 auto;max-width:42ch}
-h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:30px 0 10px;font-weight:600}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:.1em;color:var(--fg);margin:36px 0 12px;padding-top:14px;border-top:1px solid var(--line);font-weight:700}
 a.link{display:flex;gap:14px;align-items:center;text-decoration:none;color:inherit;background:var(--card);
   border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;transition:background .15s,transform .15s}
 a.link:hover{background:var(--card-hover);transform:translateY(-1px)}
@@ -68,6 +68,8 @@ details summary::before{content:"▸ "}details[open] summary::before{content:"�
 .chips small{color:var(--muted);font-size:12px;margin-left:4px}
 .chips a:hover{background:var(--card-hover)}
 footer{text-align:center;color:var(--muted);font-size:13px;margin-top:36px}
+.theme{display:block;margin:14px auto 0;font:inherit;font-size:14px;color:var(--muted);background:none;border:1px solid var(--line);border-radius:99px;padding:4px 14px;cursor:pointer}
+.theme:hover{background:var(--card-hover)}
 </style>
 </head>
 <body>
@@ -84,6 +86,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:36px}
     <a class="qrlink" href="https://www.linkedin.com/in/witolddubus" target="_blank" rel="noopener">linkedin.com/in/witolddubus ↗</a>
     <div id="qr" role="img" aria-label="QR code linking to my LinkedIn profile"></div>
   </details>
+  <button id="theme" class="theme" type="button" aria-label="Switch colour theme">🌙 Dark</button>
 </header>
 
 <h2>Projects</h2>
@@ -144,15 +147,29 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:36px}
 <ul class="notes">
   <li><b>EU per diem tool</b><span class="pill">ongoing</span><span>Free per diem and exchange-rate lookup for EU-funded missions. <a href="https://sneakysquidz.github.io/ExpertDesk/" target="_blank" rel="noopener">Try the beta</a>.</span></li>
   <li><b>Expert Desk</b><span class="pill">ongoing</span><span>A compliance helper for experts and firms in EU cooperation consulting; the per diem tool is its first piece.</span></li>
-  <li><b>Prints from Aurora Balearis</b><span class="pill">idea</span><span>A small shop for photo prints.</span></li>
 </ul>
 
-<footer>Made in Barcelona · hosted on GitHub Pages</footer>
+<footer>Made in Barcelona · hosted on GitHub Pages<br>Last updated 2026-10-29</footer>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 try{new QRCode(document.getElementById("qr"),{text:"https://www.linkedin.com/in/witolddubus",width:180,height:180,correctLevel:QRCode.CorrectLevel.M})}
 catch(e){document.querySelector(".qrbox").hidden=true}
+</script>
+<script>
+(function(){
+  var root=document.documentElement,btn=document.getElementById("theme");
+  var mq=matchMedia("(prefers-color-scheme: dark)");
+  function dark(){return root.dataset.theme?root.dataset.theme==="dark":mq.matches}
+  function paint(){btn.textContent=dark()?"☀️ Light":"🌙 Dark"}
+  try{var saved=localStorage.getItem("theme");if(saved)root.dataset.theme=saved}catch(e){}
+  btn.addEventListener("click",function(){
+    var next=dark()?"light":"dark";root.dataset.theme=next;
+    try{localStorage.setItem("theme",next)}catch(e){}
+    paint();
+  });
+  paint();
+})();
 </script>
 </body>
 </html>
