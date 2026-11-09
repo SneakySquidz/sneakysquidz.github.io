@@ -67,6 +67,8 @@ details summary{cursor:pointer;color:var(--muted);font-size:14px;list-style:none
 details summary::-webkit-details-marker{display:none}
 details summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
 .qrbox{margin-top:12px}
+.sect>summary{font-weight:500;margin:40px 0 12px;padding-top:16px;border-top:1px solid var(--line)}
+.sect:not([open])+h2{margin-top:28px}
 .qrlink{display:block;margin-top:8px;color:var(--accent);font-weight:600;text-decoration:none}
 #qr{display:inline-block;background:#fff;padding:12px;border-radius:8px;line-height:0;margin-top:8px}
 .howto{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:8px}
@@ -124,10 +126,6 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
   <div class="ico" aria-hidden="true"><svg><use href="#i-bike"/></svg></div>
   <div class="txt"><b>Training dashboard</b><span>My rides, hikes and training, charted</span></div><div class="arrow">↗</div>
 </a>
-<a class="link" href="https://github.com/SneakySquidz/training-dashboard" target="_blank" rel="noopener">
-  <div class="ico" aria-hidden="true"><svg><use href="#i-code"/></svg></div>
-  <div class="txt"><b>Training dashboard, the code</b><span>GitHub repo behind the Garmin dashboard: location-safe public copy</span></div><div class="arrow">↗</div>
-</a>
 <a class="link" href="https://sneakysquidz.github.io/MedSEAS/" target="_blank" rel="noopener">
   <div class="ico" aria-hidden="true"><svg><use href="#i-waves"/></svg></div>
   <div class="txt"><b>MedSEAS</b><span>A data dashboard of the Mediterranean's sub-basins</span></div><div class="arrow">↗</div>
@@ -136,6 +134,13 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
   <div class="ico" aria-hidden="true"><svg><use href="#i-house"/></svg></div>
   <div class="txt"><b>Rural plots, southern Catalonia</b><span>Country properties I'm scouting, with the shortlist and notes (Google Sheets; access by invitation)</span></div><div class="arrow">↗</div>
 </a>
+
+<details class="sect"><summary>Code</summary>
+<a class="link" href="https://github.com/SneakySquidz/training-dashboard" target="_blank" rel="noopener">
+  <div class="ico" aria-hidden="true"><svg><use href="#i-code"/></svg></div>
+  <div class="txt"><b>Training dashboard</b><span>GitHub repo behind the Garmin dashboard: location-safe public copy</span></div><div class="arrow">↗</div>
+</a>
+</details>
 
 <h2>Travel &amp; weekly plans</h2>
 <p class="hint">Free weekly "what's on" briefs on Telegram, every Friday.</p>
