@@ -42,7 +42,8 @@ a.link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .txt span{display:block;color:var(--muted);font-size:14px}
 .arrow{margin-left:auto;color:var(--muted);flex:none}
 .notes{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 16px;margin:0}
-.notes li{list-style:none;padding:12px 0;border-bottom:1px solid var(--line)}
+.notes li{list-style:none;padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+.notes .txt b{display:inline}
 .notes li:last-child{border-bottom:0}
 .notes b{font-weight:500}
 .notes span{display:block;color:var(--muted);font-size:14px}
@@ -89,6 +90,14 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
 <symbol id="i-send" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></symbol>
 <symbol id="i-tree" viewBox="0 0 24 24"><path d="M6 3v12"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></symbol>
 <symbol id="i-map" viewBox="0 0 24 24"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></symbol>
+<symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+<symbol id="i-watch" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><path d="M12 10v2l1 1"/><path d="m16.13 7.66-.81-4.05a2 2 0 0 0-2-1.61h-2.68a2 2 0 0 0-2 1.61l-.78 4.05"/><path d="m7.88 16.36.8 4a2 2 0 0 0 2 1.61h2.72a2 2 0 0 0 2-1.61l.81-4.05"/></symbol>
+<symbol id="i-euro" viewBox="0 0 24 24"><path d="M4 10h12"/><path d="M4 14h9"/><path d="M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2"/></symbol>
+<symbol id="i-briefcase" viewBox="0 0 24 24"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></symbol>
+<symbol id="i-landmark" viewBox="0 0 24 24"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 2 20 7H4z"/></symbol>
+<symbol id="i-palette" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.12a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.55-2.5 5.55-5.55C21.97 6.01 17.46 2 12 2z"/></symbol>
+<symbol id="i-mountain" viewBox="0 0 24 24"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
 </svg>
 <main>
 <header>
@@ -137,15 +146,15 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
   <summary class="link"><div class="ico" aria-hidden="true"><svg><use href="#i-send"/></svg></div><div class="txt"><b>Weekly plans on Telegram</b><span>Barcelona, Paris, Zakopane</span></div><div class="arrow chev" aria-hidden="true">▾</div></summary>
   <div class="plans-list">
   <a class="link" href="https://t.me/+rJIYs0WjeEZmZDJk" target="_blank" rel="noopener">
-    <div class="ico" aria-hidden="true"><svg><use href="#i-send"/></svg></div>
+    <div class="ico" aria-hidden="true"><svg><use href="#i-landmark"/></svg></div>
     <div class="txt"><b>BCN Plans</b><span>Barcelona: heritage, markets, free culture, day trips</span></div><div class="arrow">↗</div>
   </a>
   <a class="link" href="https://t.me/+VxiyhuU3lhU5NjNk" target="_blank" rel="noopener">
-    <div class="ico" aria-hidden="true"><svg><use href="#i-send"/></svg></div>
+    <div class="ico" aria-hidden="true"><svg><use href="#i-palette"/></svg></div>
     <div class="txt"><b>Paris Plans</b><span>Paris: exhibitions, free museum days, markets</span></div><div class="arrow">↗</div>
   </a>
   <a class="link" href="https://t.me/+W5Bu_GFZlQA4ZTRk" target="_blank" rel="noopener">
-    <div class="ico" aria-hidden="true"><svg><use href="#i-send"/></svg></div>
+    <div class="ico" aria-hidden="true"><svg><use href="#i-mountain"/></svg></div>
     <div class="txt"><b>Zako Plans</b><span>Zakopane and the Tatras: walks, highlander heritage, events</span></div><div class="arrow">↗</div>
   </a>
   <details class="howto"><summary>How to join a channel</summary>
@@ -155,11 +164,11 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
 </details>
 <h2>Travel guides</h2>
 <a class="link" href="https://exploretatra.com" target="_blank" rel="noopener">
-  <div class="ico" aria-hidden="true"><svg><use href="#i-map"/></svg></div>
+  <div class="ico" aria-hidden="true"><svg><use href="#i-mountain"/></svg></div>
   <div class="txt"><b>Explore Tatra</b><span>Guide: trails, stays and tours around Zakopane</span></div><div class="arrow">↗</div>
 </a>
 <a class="link" href="https://menorcaplan.com" target="_blank" rel="noopener">
-  <div class="ico" aria-hidden="true"><svg><use href="#i-map"/></svg></div>
+  <div class="ico" aria-hidden="true"><svg><use href="#i-sun"/></svg></div>
   <div class="txt"><b>Menorca Plan</b><span>Guide: beaches, Talayotic heritage, what to book</span></div><div class="arrow">↗</div>
 </a>
 
@@ -179,10 +188,10 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
 
 <h2>In progress</h2>
 <ul class="notes">
-  <li><b>Record Waterfalls</b><span class="pill">Ongoing</span><span>Twelve record-holding waterfalls, animated, with a source for every figure. <a href="https://sneakysquidz.github.io/record-waterfalls/" target="_blank" rel="noopener">See the page</a>.</span></li>
-  <li><b>Moto Ride</b><span class="pill">Ongoing</span><span>A Garmin watch app for motorcycle rides: pre-ride check, alerts, fuel range, lean angle and g-force. Store beta to come.</span></li>
-  <li><b>EU per diem tool</b><span class="pill">Ongoing</span><span>Free per diem and exchange-rate lookup for EU-funded missions. <a href="https://sneakysquidz.github.io/ExpertDesk/" target="_blank" rel="noopener">Try the beta</a>.</span></li>
-  <li><b>Expert Desk</b><span class="pill">Ongoing</span><span>A compliance helper for experts and firms in EU cooperation consulting; the per diem tool is its first piece.</span></li>
+  <li><div class="ico" aria-hidden="true"><svg><use href="#i-droplet"/></svg></div><div class="txt"><b>Record Waterfalls</b><span class="pill">Ongoing</span><span>Twelve record-holding waterfalls, animated, with a source for every figure. <a href="https://sneakysquidz.github.io/record-waterfalls/" target="_blank" rel="noopener">See the page</a>.</span></div></li>
+  <li><div class="ico" aria-hidden="true"><svg><use href="#i-watch"/></svg></div><div class="txt"><b>Moto Ride</b><span class="pill">Ongoing</span><span>A Garmin watch app for motorcycle rides: pre-ride check, alerts, fuel range, lean angle and g-force. Store beta to come.</span></div></li>
+  <li><div class="ico" aria-hidden="true"><svg><use href="#i-euro"/></svg></div><div class="txt"><b>EU per diem tool</b><span class="pill">Ongoing</span><span>Free per diem and exchange-rate lookup for EU-funded missions. <a href="https://sneakysquidz.github.io/ExpertDesk/" target="_blank" rel="noopener">Try the beta</a>.</span></div></li>
+  <li><div class="ico" aria-hidden="true"><svg><use href="#i-briefcase"/></svg></div><div class="txt"><b>Expert Desk</b><span class="pill">Ongoing</span><span>A compliance helper for experts and firms in EU cooperation consulting; the per diem tool is its first piece.</span></div></li>
 </ul>
 
 <footer>Made in Barcelona · hosted on GitHub Pages<br>Last updated 2026-11-13</footer>
