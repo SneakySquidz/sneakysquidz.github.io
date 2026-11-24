@@ -89,6 +89,12 @@ a.tile:focus-visible,.tile a:focus-visible,.btn:focus-visible,.theme:focus-visib
 .widget .row a{text-decoration:none;color:var(--fg);background:var(--card);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:500;white-space:nowrap;transition:background-color .15s ease-out}
 .widget .row a:hover{background:var(--card-hover)}
 .widget .head{display:flex;gap:12px;align-items:center}
+/* collapsible group tile (Expert Desk and its tools) */
+.group{grid-column:1/-1;justify-content:flex-start}
+.group>summary{display:flex;align-items:center;gap:12px;color:inherit;font-size:inherit;padding-right:110px}
+.group>summary::before,.group[open]>summary::before{content:none}
+.group>summary .badge::after{content:" ▸"}.group[open]>summary .badge::after{content:" ▾"}
+.group .inner{margin-top:12px}
 .howto{margin-top:12px}
 .howto ol{margin:8px 0 0;padding-left:20px;color:var(--muted);font-size:14px}
 footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
@@ -209,21 +215,25 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
 
 <h2>Tools and side projects</h2>
 <div class="grid">
-  <a class="tile w sea" href="https://sneakysquidz.github.io/ExpertDesk/" target="_blank" rel="noopener">
-    <div class="ico" aria-hidden="true"><svg><use href="#i-euro"/></svg></div>
-    <div><b>EU per diem tool</b><span class="sub">Free per diem and exchange-rate lookup for EU-funded missions (beta)</span></div>
-    <span class="arrow" aria-hidden="true">↗</span>
-  </a>
-  <a class="tile w leaf" href="https://sneakysquidz.github.io/tor-desk/" target="_blank" rel="noopener">
-    <div class="ico" aria-hidden="true"><svg><use href="#i-filecheck"/></svg></div>
-    <div><b>ToR Desk (demo)</b><span class="sub">Reads a ToR: go/no-go, changes, contradictions, red flags (sample)</span></div>
-    <span class="arrow" aria-hidden="true">↗</span>
-  </a>
-  <div class="tile s stone">
-    <div class="ico" aria-hidden="true"><svg><use href="#i-briefcase"/></svg></div>
-    <div><b>Expert Desk</b><span class="sub">Compliance helper for EU consulting</span></div>
-    <span class="badge">Ongoing</span>
-  </div>
+  <details class="tile stone group">
+    <summary>
+      <div class="ico" aria-hidden="true"><svg><use href="#i-briefcase"/></svg></div>
+      <div><b>Expert Desk</b><span class="sub">Tools for EU consulting: per diem lookup and a ToR reader</span></div>
+      <span class="badge">Ongoing · 2 tools</span>
+    </summary>
+    <div class="grid inner">
+      <a class="tile w sea" href="https://sneakysquidz.github.io/ExpertDesk/" target="_blank" rel="noopener">
+        <div class="ico" aria-hidden="true"><svg><use href="#i-euro"/></svg></div>
+        <div><b>EU per diem tool</b><span class="sub">Free per diem and exchange-rate lookup for EU-funded missions (beta)</span></div>
+        <span class="arrow" aria-hidden="true">↗</span>
+      </a>
+      <a class="tile w leaf" href="https://sneakysquidz.github.io/tor-desk/" target="_blank" rel="noopener">
+        <div class="ico" aria-hidden="true"><svg><use href="#i-filecheck"/></svg></div>
+        <div><b>ToR Desk (demo)</b><span class="sub">Reads a ToR: go/no-go, changes, contradictions, red flags (sample)</span></div>
+        <span class="arrow" aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </details>
   <div class="tile s leaf">
     <div class="ico" aria-hidden="true"><svg><use href="#i-watch"/></svg></div>
     <div><b>Moto Ride</b><span class="sub">Garmin app for motorcycle rides</span></div>
