@@ -9,6 +9,12 @@
 <style>
 body.demo #rescore, body.demo #prof, body.demo a[href^="/api/"], body.demo a[href="#/new"] { display: none; }
 .demo-intro { display: block; line-height: 1.5; }
+#pd-dialog { border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--text); max-width: 460px; width: calc(100% - 32px); padding: 18px; }
+#pd-dialog::backdrop { background: rgb(0 0 0 / .35); }
+#pd-dialog label { display: block; margin: 10px 0 4px; font-size: 13px; color: var(--muted); }
+#pd-dialog select, #pd-dialog input { width: 100%; box-sizing: border-box; }
+#pd-out { margin: 14px 0 8px; line-height: 1.6; }
+#pd-src { font-size: 12px; color: var(--muted); line-height: 1.5; }
 </style>
 </head>
 <body class="demo">
@@ -16,6 +22,7 @@ body.demo #rescore, body.demo #prof, body.demo a[href^="/api/"], body.demo a[hre
   <a class="brand" href="#/">ToR Desk</a>
   
   <span class="spacer"></span>
+  <button class="btn" id="pd-open" type="button">Per diem &amp; FX</button>
   <a class="btn primary" href="#/new">New check</a>
 </header>
 <main>
@@ -28,6 +35,16 @@ from its website. Open the tabs: requirements, contradictions, red flags, scorin
 <div class="toast" id="toast"></div>
 <script src="demo-data.js"></script>
 <script src="app.js"></script>
+<dialog id="pd-dialog" aria-labelledby="pd-title">
+<h3 id="pd-title" style="margin:0 0 4px">EU per diem &amp; exchange rate</h3>
+<label for="pd-country">Mission country</label><select id="pd-country"></select>
+<label for="pd-days">Days (nights away)</label><input id="pd-days" type="number" min="0" value="10">
+<label for="pd-cur">Pay in</label><select id="pd-cur"></select>
+<div id="pd-out">Loading the rates…</div>
+<p id="pd-src"></p>
+<button class="btn" id="pd-close" type="button">Close</button>
+</dialog>
+<script src="demo-perdiem.js"></script>
 <!-- style-panel:start v3 (master: ~/.claude/snippets/style-panel.html; update every copy with ~/.claude/snippets/sync-style-panel.py) -->
 <!-- Paste just before </body>. Self-contained, no external calls, works in artifacts. The edit panel (2026-11-10):
      lets the viewer edit the page's text, its :root colour variables, text size and font; saved in this browser,
