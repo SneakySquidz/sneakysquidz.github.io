@@ -67,19 +67,31 @@ async function route() {
 addEventListener("hashchange", route);
 
 // ------------------------------------------------------------ list
+const CONF = { low: "Low confidence", medium: "Medium confidence", high: "High confidence" };
+const confPill = c => c ? `<span class="pill conf-${h(c)}" title="How far the call and the profile let the model judge. Add the facts under 'Make this sharper' to raise it.">${CONF[c] || h(c)}</span>` : "";
+const vPill = v => v ? `<span class="pill v-${slug(v).toUpperCase()}">${h(v)}</span>` : "";
 async function viewList() {
   const list = await api("/api/analyses");
-  const steps = `<ol class="steps"><li><b>Add a profile.</b> A firm from its website or portfolio, or an expert from a CV.</li>
-    <li><b>Drop a ToR, call or concept note.</b> It is read once: requirements, knock-outs, contradictions, red flags.</li>
-    <li><b>Get the report.</b> GO / GO IF / NO-GO, the changes to make, and every requirement's status.</li></ol>`;
-  view.innerHTML = `<div class="head"><div><h1>Analyses</h1><p class="sub">Each document read once, then scored against a firm or an expert.</p></div>
-    <a class="btn primary" href="#/new">New analysis</a></div>` + (list.length ? `
-    <table class="grid"><thead><tr><th>Call or tender</th><th>Scored against</th><th>Deadline</th><th>Decision</th><th>Status</th><th>Created</th></tr></thead><tbody>
-    ${list.map(a => `<tr class="click" data-go="#/a/${h(a.id)}"><td><b>${h(a.title)}</b></td><td>${h(a.profile) || '<span class="hint">none</span>'}</td>
-      <td>${h(a.deadline)} <span class="hint">${dl(a.deadline)}</span></td><td>${a.verdict ? `<span class="pill v-${slug(a.verdict).toUpperCase()}">${h(a.verdict)}</span>` : ""}</td>
-      <td>${BUSY.includes(a.status) ? '<span class="pill st-to-check">working</span>' : a.status === "error" ? '<span class="pill st-gap">error</span>' : '<span class="pill st-met">ready</span>'}</td>
-      <td class="hint">${h(a.created.replace("T", " ").slice(0, 16))}</td></tr>`).join("")}</tbody></table>`
-    : `<div class="card">${steps}<p><a class="btn primary" href="#/profiles">Add a profile</a> <a class="btn" href="#/new">Read a ToR</a></p></div>`);
+  if (!list.length) {
+    view.innerHTML = `<div class="welcome card">
+      <h1>Is this call worth bidding for?</h1>
+      <p class="sub">Give ToR Desk a call and who would bid. It reads the call once, scores it against the firm or expert, and tells you GO, GO IF or NO-GO, with the changes to make.</p>
+      <ol class="how"><li><span class="num">1</span><div><b>The call</b><span class="hint">Upload the ToR, call or notice, or paste a few lines of it.</span></div></li>
+        <li><span class="num">2</span><div><b>Who would bid</b><span class="hint">A firm's website, an expert's CV, or a few lines about either.</span></div></li>
+        <li><span class="num">3</span><div><b>The verdict</b><span class="hint">Knock-outs, fit score, every requirement's status and what to fix.</span></div></li></ol>
+      <p><a class="btn primary big" href="#/new">Start a check</a></p>
+      <p class="hint">Small input works; more context gives a sharper result. The report says what to add.</p></div>`;
+    return;
+  }
+  view.innerHTML = `<div class="head"><div><h1>Checks</h1><p class="sub">Each call read once, then scored against a firm or an expert.</p></div>
+    <a class="btn primary" href="#/new">New check</a></div>
+    <div class="rows">${list.map(a => {
+      const busy = BUSY.includes(a.status);
+      return `<a class="row card" href="#/a/${h(a.id)}">
+        <div class="r-main"><b>${h(a.title)}</b><span class="hint">${a.profile ? "against " + h(a.profile) : "not scored yet"} · ${h(a.created.replace("T", " ").slice(0, 16))}</span></div>
+        <div class="r-dl">${a.deadline ? `${h(a.deadline)}<span class="hint">${dl(a.deadline)}</span>` : ""}</div>
+        <div class="r-v">${busy ? '<span class="pill st-to-check"><span class="spin sm"></span> working</span>' : a.status === "error" ? '<span class="pill st-gap">error</span>' : vPill(a.verdict) + " " + confPill(a.confidence)}</div></a>`;
+    }).join("")}</div>`;
 }
 view.addEventListener("click", e => {
   const go = e.target.closest("[data-go]"); if (go) { location.hash = go.dataset.go; return; }
@@ -108,24 +120,91 @@ function profileOptions(sel, none = true) {
   return (none ? `<option value="">None: read the document only</option>` : "") + grp("firm") + grp("expert");
 }
 
-// ------------------------------------------------------------ new analysis
+// ------------------------------------------------------------ new check: the call + who would bid, on one screen
+function pickCard(p) {
+  const bits = [p.url && h(p.url.replace(/^https?:\/\//, "")), p.files.length && `${p.files.length} doc${p.files.length > 1 ? "s" : ""}`, p.status === "building" && "building…"].filter(Boolean).join(" · ");
+  return `<label class="opt"><input type="radio" name="pick" value="${h(p.id)}"><span class="o-t">${h(p.name)} ${kindPill(p.kind)}</span><span class="hint">${bits || "notes only"}</span></label>`;
+}
 function viewNew() {
-  view.innerHTML = `<div class="head"><div><h1>New analysis</h1><p class="sub">Drop the ToR, call for proposals or concept note guidelines first, then annexes and the procurement notice: knock-out rules often sit in the notice.</p></div></div>
-  <form id="fnew" class="card">
-    ${dropZone("files", "Drop the documents here, or click to choose")}
-    <div class="cols">
-      <div><label class="f">Score against</label><select name="profile_id">${profileOptions(PROFILES.find(p => p.kind === "firm")?.id || PROFILES[0]?.id)}</select>
-        <div class="hint">${PROFILES.length ? "A firm is checked on organisation eligibility, references and team; an expert on the position requirements." : 'No profile yet: <a href="#/profiles">add a firm or an expert</a>.'}</div></div>
-      <div><label class="f">Reading depth</label><select name="effort"><option value="high">Thorough (recommended)</option><option value="medium">Faster, a little cheaper</option></select>
-        <div class="hint">About $0.30-0.70 per 10-page document, plus about $0.25 for the scoring.</div></div>
-    </div>
-    <p><button class="btn primary">Read and score</button></p></form>`;
+  const def = (PROFILES.find(p => p.kind === "firm") || PROFILES[0])?.id || "new";
+  view.innerHTML = `<div class="head"><div><h1>New check</h1><p class="sub">The call and who would bid. A few lines of each is enough to start; the more you give, the sharper the result.</p></div></div>
+  <form id="fnew" class="flow" autocomplete="off">
+    <section class="card step"><div class="step-h"><span class="num">1</span><div><h2>The call</h2>
+      <p class="hint">ToR, call for proposals, EoI or concept note guidelines. Add annexes and the procurement notice if you have them: knock-out rules often sit there.</p></div></div>
+      <div class="switch" data-switch="src"><button type="button" data-v="files" class="on">Upload documents</button><button type="button" data-v="text">Paste text</button></div>
+      <div data-pane="src" data-v="files">${dropZone("files", "Drop the documents here, or click to choose")}</div>
+      <div data-pane="src" data-v="text" hidden><textarea name="text" aria-label="Call text" rows="9" placeholder="Paste the call: title, who can apply, what is asked, deadline, budget, selection criteria… A short summary works; the full text works better."></textarea>
+        <div class="hint" id="tlen">At least a few lines.</div></div>
+    </section>
+    <section class="card step"><div class="step-h"><span class="num">2</span><div><h2>Who would bid</h2>
+      <p class="hint">A <b>firm</b> is checked on eligibility, turnover, references and team; an <b>expert</b> on a position's requirements.</p></div></div>
+      <div class="pick">${PROFILES.map(pickCard).join("")}
+        <label class="opt add"><input type="radio" name="pick" value="new"><span class="o-t">+ New profile</span><span class="hint">a website, a CV, or a few lines</span></label>
+        <label class="opt skip"><input type="radio" name="pick" value=""><span class="o-t">Just read the call</span><span class="hint">score it later</span></label></div>
+      <div id="newprof" class="sub-card" hidden>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="kind" value="firm" checked> <b>Firm</b> <span class="hint">company website or portfolio</span></label>
+          <label><input type="radio" name="kind" value="expert"> <b>Expert</b> <span class="hint">one person's CV</span></label></div>
+        <div class="cols"><div>
+          <label class="f" data-l-url>Website</label><input name="url" aria-label="Website" placeholder="company.com" class="full">
+          <label class="f">Name <span class="hint">optional</span></label><input name="pname" aria-label="Profile name" class="full">
+          <label class="f">A few lines about it</label><textarea name="notes" aria-label="Notes" rows="5" placeholder="${h(NOTES_PH.firm)}"></textarea>
+        </div><div>
+          <label class="f" data-l-docs>Portfolio, capability statement, reference list</label>
+          ${dropZone("pfiles", "Drop documents here, or click to choose")}
+          <p class="hint">Any one of the three is enough. The profile is saved, so the next check reuses it; you can correct every fact on the Profiles page.</p>
+        </div></div></div>
+    </section>
+    <section class="card step go"><div class="step-h"><span class="num">3</span><div><h2>Run the check</h2>
+      <p class="hint" id="costhint">About $0.30-1.00 for a full ToR, much less for a short call. Profiles cost about $0.05-0.15 to build.</p></div></div>
+      <div class="go-row"><select name="effort"><option value="high">Thorough reading (recommended)</option><option value="medium">Faster, a little cheaper</option></select>
+        <button class="btn primary big" id="run">Run the check</button></div>
+    </section>
+  </form>`;
+  const f = $("#fnew"), el = n => f.elements.namedItem(n);
   wireDrops(view);
-  $("#fnew").onsubmit = async e => {
+  let src = "files";
+  f.querySelectorAll("[data-switch] button").forEach(b => b.onclick = () => {
+    src = b.dataset.v;
+    f.querySelectorAll("[data-switch] button").forEach(x => x.classList.toggle("on", x === b));
+    f.querySelectorAll("[data-pane]").forEach(p => p.hidden = p.dataset.v !== src);
+    if (src === "text") el("text").focus();
+  });
+  el("text").oninput = () => { const n = el("text").value.trim().length; $("#tlen").textContent = n < 40 ? "At least a few lines." : `${n.toLocaleString()} characters`; };
+  const pick = v => { const r = f.querySelector(`[name=pick][value="${v}"]`); if (r) r.checked = true; $("#newprof").hidden = v !== "new"; };
+  f.querySelectorAll("[name=pick]").forEach(r => r.onchange = () => pick(r.value));
+  pick(def);
+  f.querySelectorAll("[name=kind]").forEach(r => r.onchange = () => {
+    const firm = r.value === "firm";
+    $("[data-l-url]", f).textContent = firm ? "Website" : "Web page (optional)";
+    el("url").placeholder = firm ? "company.com" : "personal site or online CV";
+    $("[data-l-docs]", f).textContent = firm ? "Portfolio, capability statement, reference list" : "CV (and any annex)";
+    el("notes").placeholder = NOTES_PH[r.value];
+  });
+  f.onsubmit = async e => {
     e.preventDefault();
-    const b = $("button", e.target); b.disabled = true;
-    try { const r = await api("/api/analyses", { method: "POST", body: new FormData(e.target) }); location.hash = "#/a/" + r.id; }
-    catch (err) { fail(err); b.disabled = false; }
+    const files = [...el("files").files], text = el("text").value.trim(), who = f.querySelector("[name=pick]:checked")?.value ?? "";
+    if (src === "files" && !files.length) return fail("Add the call documents, or switch to Paste text.");
+    if (src === "text" && text.length < 40) return fail("Paste a few lines of the call (at least 40 characters).");
+    const pf = [...el("pfiles").files], url = el("url").value.trim(), notes = el("notes").value;
+    if (who === "new" && !pf.length && !url && notes.trim().length < 20) return fail("For the new profile, give a website, a document, or a few lines about the firm or expert.");
+    const b = $("#run"); b.disabled = true;
+    try {
+      let pid = who;
+      if (who === "new") {
+        b.textContent = "Saving the profile…";
+        const fd = new FormData();
+        fd.append("kind", f.querySelector("[name=kind]:checked").value); fd.append("url", url); fd.append("name", el("pname").value.trim()); fd.append("notes", notes);
+        pf.forEach(x => fd.append("files", x));
+        pid = (await api("/api/profiles", { method: "POST", body: fd })).id;
+      }
+      b.textContent = "Starting…";
+      const fd = new FormData();
+      if (src === "files") files.forEach(x => fd.append("files", x)); else fd.append("text", text);
+      fd.append("profile_id", pid); fd.append("effort", el("effort").value);
+      const r = await api("/api/analyses", { method: "POST", body: fd });
+      location.hash = "#/a/" + r.id;
+    } catch (err) { fail(err); b.disabled = false; b.textContent = "Run the check"; }
   };
 }
 
@@ -160,10 +239,10 @@ function profCard(p) {
       <label class="f">Facts the scoring uses</label>
       <textarea name="facts" rows="14" placeholder="${busy ? "Being written…" : "Add a website or documents and click Rebuild, or type the facts here."}">${h(p.facts)}</textarea>
       <div class="hint">Edit freely. Rebuilding rewrites this text; put lasting points in the notes, which every rebuild reads.</div>
-      <label class="f">Your rules and notes</label><textarea name="notes" rows="4" placeholder="${h(NOTES_PH[p.kind])}">${h(p.notes)}</textarea>
+      <label class="f">Your rules and notes</label><textarea name="notes" aria-label="Notes" rows="4" placeholder="${h(NOTES_PH[p.kind])}">${h(p.notes)}</textarea>
     </div><div>
       ${link}
-      <label class="f">${firm ? "Website" : "Web page (optional)"}</label><input name="url" value="${h(p.url)}" placeholder="${firm ? "company.com" : "personal site or online CV"}" style="width:100%">
+      <label class="f">${firm ? "Website" : "Web page (optional)"}</label><input name="url" aria-label="Website" value="${h(p.url)}" placeholder="${firm ? "company.com" : "personal site or online CV"}" style="width:100%">
       <label class="f">Add documents</label><input type="file" name="files" multiple accept="${CFG.accepted.join(",")}">
       ${p.files.length ? `<div class="hint">Have: ${p.files.map(f => h(f.name)).join(", ")}</div>` : ""}
       ${p.sources.length ? `<details><summary class="hint">${p.sources.length} web pages read</summary><ul class="tight hint">${p.sources.map(u => `<li>${h(u)}</li>`).join("")}</ul></details>` : ""}
@@ -172,20 +251,20 @@ function profCard(p) {
 }
 
 function newProfileForm() {
-  return `<form id="fprof" class="card"><h2 style="margin-top:0">New profile</h2>
+  return `<details class="card add-prof" ${PROFILES.length ? "" : "open"}><summary><b>+ Add a profile</b> <span class="hint">a firm from its website or portfolio, an expert from a CV, or either from a few lines</span></summary><form id="fprof">
     <div class="seg" role="radiogroup">
       <label><input type="radio" name="kind" value="firm" checked> <b>Firm</b> <span class="hint">company eligibility, references, roster</span></label>
       <label><input type="radio" name="kind" value="expert"> <b>Expert</b> <span class="hint">one person's CV, matched to positions</span></label></div>
     <div class="cols"><div>
-      <label class="f" data-l-url>Website</label><input name="url" placeholder="company.com" style="width:100%">
+      <label class="f" data-l-url>Website</label><input name="url" aria-label="Website" placeholder="company.com" style="width:100%">
       <div class="hint" data-h-url>Reads the home page plus the about, services, projects and team pages (up to 8 pages).</div>
-      <label class="f">Name <span class="hint" data-h-name>optional: taken from the website</span></label><input name="name" style="width:100%">
-      <label class="f">Your rules and notes</label><textarea name="notes" rows="5" placeholder="${h(NOTES_PH.firm)}"></textarea>
+      <label class="f">Name <span class="hint" data-h-name>optional: taken from the website</span></label><input name="name" aria-label="Profile name" style="width:100%">
+      <label class="f">A few lines, rules and notes</label><textarea name="notes" aria-label="Notes" rows="5" placeholder="${h(NOTES_PH.firm)}"></textarea>
     </div><div>
       <label class="f" data-l-docs>Portfolio, capability statement, reference list</label>
       ${dropZone("files", "Drop documents here, or click to choose")}
     </div></div>
-    <p><button class="btn primary">Build profile</button> <span class="hint">About $0.05-0.15 to read the sources. You can correct every fact afterwards.</span></p></form>`;
+    <p><button class="btn primary">Build profile</button> <span class="hint">About $0.05-0.15 to read the sources. Any one source is enough; you can correct every fact afterwards.</span></p></form></details>`;
 }
 
 function viewProfiles() {
@@ -302,23 +381,29 @@ function compliance() {
   return { pct: m ? Math.round(100 * s / m) : 0, miss };
 }
 function cards() {
-  const d = decision(), rd = readiness(), c = compliance(), ko = koRows(), fp = fitPct();
-  const koOpen = A.triage ? ko.filter(x => !["met", "n/a"].includes(tri(x.i).status)).length : null;
+  const d = decision(), rd = readiness(), c = compliance(), ko = koRows(), fp = fitPct(), T = A.triage;
+  const koOpen = T ? ko.filter(x => !["met", "n/a"].includes(tri(x.i).status)).length : null;
   const seg = (n, cls) => rd && n ? `<i class="${cls}" style="width:${100 * n / (rd.base + rd.c["n/a"])}%"></i>` : "";
-  return `
-  <div class="score"><div class="k">Bid decision</div>
-    <div class="n">${d ? `<span class="pill v-${slug(d.v).toUpperCase()}" style="font-size:20px;padding:3px 14px">${d.v}</span>` : "-"}</div>
-    <div class="d">${d ? h(d.why) + (A.triage.verdict !== d.v ? ` · model said ${h(A.triage.verdict)}` : "") : "Score against a profile to get a decision"}</div></div>
-  <div class="score"><div class="k">Fit score</div><div class="n">${fp == null ? "-" : fp + "%"}</div>
-    <div class="d">${fp == null ? "Not scored yet" : "weighted bid/no-bid criteria · GO at 70%"}</div>
-    ${fp == null ? "" : `<div class="bar"><i class="${fp >= 70 ? "st-met" : fp >= 50 ? "st-partial" : "st-gap"}" style="width:${fp}%"></i></div>`}</div>
+  const hero = d ? `<div class="hero v-box-${slug(d.v)}">
+      <div class="h-v"><span class="big v-${slug(d.v).toUpperCase()}">${d.v}</span></div>
+      <div class="h-why"><b>${h(d.why)}</b>
+        <div class="h-meta">${confPill(T.confidence)}${T.verdict !== d.v ? `<span class="hint">the model said ${h(T.verdict)}; the decision follows your scores</span>` : ""}
+          ${A.profile ? `<span class="hint">against ${kindPill(A.profile.kind)} ${h(A.profile.name)}${A.profile.roster?.length ? ` + ${A.profile.roster.length} roster expert${A.profile.roster.length > 1 ? "s" : ""}` : ""}</span>` : ""}</div></div>
+      <div class="h-fit"><div class="n">${fp}%</div><div class="hint">fit · GO at 70%</div>
+        <div class="bar"><i class="${fp >= 70 ? "st-met" : fp >= 50 ? "st-partial" : "st-gap"}" style="width:${fp}%"></i></div></div></div>`
+    : A.status === "triaging"
+    ? `<div class="hero v-box-"><div class="h-why"><b><span class="spin sm"></span> Scoring…</b><div class="hint">against ${h(PROFILES.find(p => p.id === A.pending_profile)?.name || "the profile")}; the verdict appears here in 1–2 min.</div></div></div>`
+    : `<div class="hero v-box-"><div class="h-why"><b>Not scored yet</b><div class="hint">Pick a firm or an expert at the top right and click Score.</div></div></div>`;
+  return hero + `<div class="metrics">
   <div class="score"><div class="k">Requirements met</div><div class="n">${rd ? rd.pct + "%" : "-"}</div>
-    <div class="d">${rd ? `${rd.c.met} met · ${rd.c.partial} partial · ${rd.c.gap} gap · ${rd.c["to check"]} to check` : "Not scored yet"}</div>
+    <div class="d">${rd ? `${rd.c.met} met · ${rd.c.partial} partial · ${rd.c.gap} gap · ${rd.c["to check"]} to check` : `${A.tor.requirements.length} found`}</div>
     <div class="bar">${seg(rd?.c.met, "st-met")}${seg(rd?.c.partial, "st-partial")}${seg(rd?.c.gap, "st-gap")}${seg(rd?.c["to check"], "st-to-check")}</div></div>
   <div class="score"><div class="k">Knock-out rules</div><div class="n">${ko.length}</div>
     <div class="d">${!ko.length ? "none found: check the procurement notice" : koOpen == null ? "eliminatory if missed" : koOpen ? `${koOpen} not yet met` : "all met"}</div></div>
+  <div class="score"><div class="k">Watch-outs</div><div class="n">${A.tor.contradictions.length + A.tor.red_flags.length}</div>
+    <div class="d">${A.tor.contradictions.length} contradictions · ${A.tor.red_flags.length} red flags</div></div>
   ${c ? `<div class="score"><div class="k">Draft bid compliance</div><div class="n">${c.pct}%</div>
-    <div class="d">${c.miss ? `${c.miss} knock-out not fully addressed` : "all knock-outs addressed"}</div></div>` : ""}`;
+    <div class="d">${c.miss ? `${c.miss} knock-out not fully addressed` : "all knock-outs addressed"}</div></div>` : ""}</div>`;
 }
 function refreshCards() { const el = $("#cards"); if (el) el.innerHTML = cards(); }
 
@@ -329,6 +414,7 @@ async function viewAnalysis(id, keep) {
   if (A?.id !== a.id) { tab = "report"; filt = NOFILT(); }
   if (BUSY.includes(a.status) && !BUSY.includes(A?.status) || A?.id !== a.id) busySince = Date.now();
   const wasBusy = A && A.id === a.id && BUSY.includes(A.status);
+  if (wasBusy && !BUSY.includes(a.status)) PROFILES = await api("/api/profiles");  // a profile may have finished building meanwhile
   if (!keep || changed && !(wasBusy && BUSY.includes(a.status) && !!A.tor === !!a.tor)) { A = a; render(); }
   else { A.status = a.status; $("#busy-time") && ($("#busy-time").textContent = Math.round((Date.now() - busySince) / 1000) + " s"); }
   if (BUSY.includes(a.status)) poll = setTimeout(() => location.hash === "#/a/" + id && viewAnalysis(id, true), 3000);
@@ -337,7 +423,16 @@ function render() {
   const busy = BUSY.includes(A.status);
   const banner = busy ? `<div class="banner"><div class="spin"></div>${BUSY_TEXT[A.status]}… <span id="busy-time"></span></div>`
     : A.status === "error" ? `<div class="banner err">Failed: ${h(A.error)}</div>` : "";
-  if (!A.tor) { view.innerHTML = `<div class="head"><div><h1>${h(A.label)}</h1><p class="sub">${A.docs.map(d => h(d.name)).join(", ")}</p></div></div>${banner}`; return; }
+  if (!A.tor) {
+    const stage = ["queued", "reading"].includes(A.status) ? 0 : 1;
+    view.innerHTML = `<div class="head"><div><h1>${h(A.label)}</h1><p class="sub">${A.docs.map(d => h(d.name)).join(", ")}</p></div></div>
+      ${A.status === "error" ? banner : `<div class="card progress"><ol>
+        <li class="${stage === 0 ? "now" : "done"}"><b>Reading the call</b><span class="hint">requirements, knock-outs, contradictions, red flags · 1-3 min</span></li>
+        <li class="${stage === 1 ? "now" : ""}"><b>Scoring against the profile</b><span class="hint">builds the profile first if it is new · 1-2 min</span></li>
+        <li><b>Report</b><span class="hint">opens here by itself</span></li></ol>
+        <p class="hint"><span class="spin sm"></span> <span id="busy-time"></span> You can leave this page; the check carries on.</p></div>`}`;
+    return;
+  }
   const m = A.tor.meta, t = A.tor;
   const chip = (k, v) => v ? `<span class="chip" title="${h(v)}"><b>${k}</b>${h(v)}</span>` : "";
   const n = { report: "", req: t.requirements.length, clar: t.contradictions.length, flags: t.red_flags.length, score: "", bid: "" };
@@ -345,9 +440,9 @@ function render() {
   view.innerHTML = `
   <div class="head"><div><h1>${h(m.title || A.label)}</h1>
     <p class="sub">${[m.document_kind, m.contracting_authority, m.reference, m.rulebook].filter(Boolean).map(h).join(" · ")}</p></div>
-    <div class="scorebox"><select id="prof">${profileOptions(A.profile?.id, false)}</select>
-      <button class="btn primary" id="rescore" ${busy || !PROFILES.length ? "disabled" : ""}>${A.triage ? "Re-score" : "Score"}</button>
-      <div class="hint" style="margin-top:4px">${A.profile ? `Scored against ${kindPill(A.profile.kind)} <b>${h(A.profile.name)}</b>${A.profile.roster?.length ? ` + ${A.profile.roster.length} roster expert${A.profile.roster.length > 1 ? "s" : ""}` : ""} · ` : ""}spent ${money(A.costs)}</div></div></div>
+    <div class="scorebox"><div class="sb-row"><select id="prof">${profileOptions(A.profile?.id || A.pending_profile, false)}</select>
+      <button class="btn ${A.triage ? "" : "primary"}" id="rescore" ${busy || !PROFILES.length ? "disabled" : ""}>${A.triage ? "Re-score" : "Score"}</button></div>
+      <div class="hint">${PROFILES.length ? "" : '<a href="#/profiles">Add a profile</a> · '}spent ${money(A.costs)}</div></div></div>
   <div class="chips">${chip("Deadline", (m.deadline_text || m.deadline_iso) + (m.deadline_iso ? ` (${dl(m.deadline_iso)})` : ""))}${chip("Questions by", m.clarification_deadline)}
     ${chip("Budget", m.budget)}${chip("Duration", m.duration)}${chip("Where", m.geography)}${chip("Submit via", m.submission_channel)}</div>
   ${banner}
@@ -357,7 +452,7 @@ function render() {
   view.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { tab = b.dataset.tab; if (tab === "req") filt.only = null; render(); });
   $("#rescore").onclick = async () => {
     if (A.triage && Object.keys(A.user.req).length && !confirm("Re-scoring replaces the row edits you made. Continue?")) return;
-    try { await postJSON(`/api/analyses/${A.id}/triage`, { profile_id: $("#prof").value }); viewAnalysis(A.id); } catch (e) { fail(e); }
+    try { await postJSON(`/api/analyses/${A.id}/triage`, { profile_id: $("#prof").value, effort: "high" }); viewAnalysis(A.id); } catch (e) { fail(e); }
   };
   ({ report: tabReport, req: tabReq, clar: tabClar, flags: tabFlags, score: tabScore, bid: tabBid })[tab]();
 }
@@ -370,10 +465,16 @@ function tabReport() {
   let out = "";
   if (!T) out += `<div class="card empty">Pick a firm or an expert at the top right and click <b>Score</b>: you get GO / GO IF / NO-GO, the changes to make and each requirement's status.</div>`;
   else {
-    out += `<div class="card verdict v-box-${slug(d.v)}"><div class="vline"><span class="pill v-${slug(d.v).toUpperCase()}">${d.v}</span><b>${h(d.why)}</b>
-      ${T.verdict !== d.v ? `<span class="hint">· the model said ${h(T.verdict)}; the decision follows your scores</span>` : ""}</div>
-      <p>${h(T.summary)}</p>
-      ${T.conditions?.length ? `<b>Go only if</b><ul class="tight">${T.conditions.map(c => `<li>${h(c)}</li>`).join("")}</ul>` : ""}</div>`;
+    const sh = T.sharpen || [];
+    out += `<div class="cols wide-left"><div class="card"><h3 class="ct">The assessment</h3><p>${h(T.summary)}</p>
+      ${T.conditions?.length ? `<b>Go only if</b><ul class="tight">${T.conditions.map(c => `<li>${h(c)}</li>`).join("")}</ul>` : ""}</div>
+      ${sh.length ? `<div class="card sharpen conf-box-${h(T.confidence || "")}"><h3 class="ct">Make this sharper</h3>
+        <p class="hint">${T.confidence === "low" ? "This result rests on thin information." : "The result can still improve."} Adding these would settle the most rows:</p>
+        <ol class="tight">${sh.map(x => `<li>${h(x)}</li>`).join("")}</ol>
+        <p class="hint">Add them to the profile's notes or documents, then Re-score (about $0.25).</p>
+        ${A.profile ? `<a class="btn" href="#/profiles">Open the profile</a>` : ""}</div>`
+      : `<div class="card"><h3 class="ct">How sure</h3><p>${confPill(T.confidence) || '<span class="hint">Scored before confidence existed: Re-score to get it.</span>'}</p>
+        <p class="hint">More context gives a sharper result: the full ToR and annexes, the firm's references, CVs of the team.</p></div>`}</div>`;
     const ch = T.changes;
     out += `<h2>Changes to make</h2>` + (!ch ? `<div class="card hint">This analysis was scored before the change list existed: click Re-score to get it.</div>`
       : !ch.length ? `<div class="card hint">Nothing to change.</div>`
