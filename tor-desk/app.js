@@ -355,11 +355,17 @@ function fitPct() {
 const koRows = () => A.tor.requirements.map((r, i) => ({ r, i })).filter(x => x.r.criticality === "knock-out");
 function decision() {
   const p = fitPct(); if (p == null) return null;
-  const gaps = koRows().filter(x => tri(x.i).status === "gap").length;
+  // A firm can recruit a missing key expert, so that gap is a condition, not a stop (decided 2026-11-24).
+  // For an expert profile the expert row is their own CV, so it still stops the bid.
+  const gapRows = koRows().filter(x => tri(x.i).status === "gap");
+  const recruit = gapRows.filter(x => aKind() === "firm" && x.r.applies_to === "expert").length;
+  const gaps = gapRows.length - recruit;
   if (gaps) return { v: "NO-GO", why: `${gaps} knock-out gap${gaps > 1 ? "s" : ""}` };
+  const rec = recruit ? `recruit for ${recruit} key-expert gap${recruit > 1 ? "s" : ""}` : "";
+  const cap = v => recruit && v === "GO" ? "GO IF" : v;   // never a clean GO while a key expert is missing
   // The model weighs what the firm can fix (partners, recruits); its call stands until you change a score or weight.
-  if (!Object.keys(A.user.fit).length && A.triage.verdict) return { v: A.triage.verdict, why: `fit ${p}% · reasoned call, see the conditions` };
-  if (p >= 70) return { v: "GO", why: `fit ${p}%, no knock-out gap` };
+  if (!Object.keys(A.user.fit).length && A.triage.verdict) return { v: cap(A.triage.verdict), why: `fit ${p}%${rec ? " · " + rec : ""} · reasoned call, see the conditions` };
+  if (p >= 70) return recruit ? { v: "GO IF", why: `fit ${p}%: go if you ${rec}` } : { v: "GO", why: `fit ${p}%, no knock-out gap` };
   if (p >= 50) return { v: "GO IF", why: `fit ${p}%: go if the conditions are met` };
   return { v: "NO-GO", why: `fit ${p}%, under 50` };
 }
