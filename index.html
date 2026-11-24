@@ -15,26 +15,27 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2244%22 fill=%22%23234e8c%22/%3E%3Ctext x=%2250%22 y=%2264%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22sans-serif%22%3EWD%3C/text%3E%3C/svg%3E">
 <style>
 :root{
-  --bg:#f5f3ee;--card:#fffefb;--card-hover:#f0ede6;--fg:#1b1b19;--muted:#66645e;--line:#e2dfd7;
-  --accent:#234e8c;--accent-h:#1b3f73;--tag:#ece8de;
+  /* calm, smart-casual palette: warm off-white, ink navy, muted tints */
+  --bg:#f6f5f2;--card:#ffffff;--card-hover:#efeee9;--fg:#1a1c1e;--muted:#6b6d70;--line:#e4e2dd;
+  --accent:#1f3a5f;--accent-h:#172d4a;--tag:#ecebe7;
   /* tile tints: background, icon colour */
-  --sea:#e3ecf7;--sea-i:#234e8c;
-  --leaf:#e5efe4;--leaf-i:#2f6b3a;
-  --sand:#f4ead9;--sand-i:#8a5a14;
-  --rose:#f5e4e2;--rose-i:#9b3a33;
-  --plum:#ebe5f2;--plum-i:#5b3f86;
-  --stone:#ebe8e1;--stone-i:#55534d;
+  --sea:#e8edf2;--sea-i:#2d4a66;
+  --leaf:#e9ede6;--leaf-i:#4a5e45;
+  --sand:#f1ece3;--sand-i:#7a5f3a;
+  --rose:#f2e9e6;--rose-i:#8a4a40;
+  --plum:#ece9ef;--plum-i:#5a4d6b;
+  --stone:#ecebe8;--stone-i:#55565a;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#121211;--card:#1c1c1a;--card-hover:#262623;--fg:#efeee9;--muted:#a3a198;--line:#33322e;
-  --accent:#7fa7e6;--accent-h:#9bbbee;--tag:#2a2926;
-  --sea:#1a2533;--sea-i:#8fb3ea;--leaf:#1b271d;--leaf-i:#8cc79a;--sand:#2a2318;--sand-i:#e0b56e;
-  --rose:#2c1d1c;--rose-i:#e79a92;--plum:#241e2d;--plum-i:#bba3e3;--stone:#22211e;--stone-i:#b5b2a9;}}
+  --bg:#101113;--card:#18191c;--card-hover:#212226;--fg:#ecebe8;--muted:#9c9ea3;--line:#2c2d31;
+  --accent:#9db4d3;--accent-h:#b6c8e0;--tag:#232428;
+  --sea:#1a2028;--sea-i:#9db4d3;--leaf:#1b1f1a;--leaf-i:#a7b8a0;--sand:#22201b;--sand-i:#cdb48e;
+  --rose:#241d1c;--rose-i:#d2a197;--plum:#1f1d24;--plum-i:#b3a8c4;--stone:#1d1e20;--stone-i:#b0b1b4;}}
 :root[data-theme="dark"]{
-  --bg:#121211;--card:#1c1c1a;--card-hover:#262623;--fg:#efeee9;--muted:#a3a198;--line:#33322e;
-  --accent:#7fa7e6;--accent-h:#9bbbee;--tag:#2a2926;
-  --sea:#1a2533;--sea-i:#8fb3ea;--leaf:#1b271d;--leaf-i:#8cc79a;--sand:#2a2318;--sand-i:#e0b56e;
-  --rose:#2c1d1c;--rose-i:#e79a92;--plum:#241e2d;--plum-i:#bba3e3;--stone:#22211e;--stone-i:#b5b2a9}
+  --bg:#101113;--card:#18191c;--card-hover:#212226;--fg:#ecebe8;--muted:#9c9ea3;--line:#2c2d31;
+  --accent:#9db4d3;--accent-h:#b6c8e0;--tag:#232428;
+  --sea:#1a2028;--sea-i:#9db4d3;--leaf:#1b1f1a;--leaf-i:#a7b8a0;--sand:#22201b;--sand-i:#cdb48e;
+  --rose:#241d1c;--rose-i:#d2a197;--plum:#1f1d24;--plum-i:#b3a8c4;--stone:#1d1e20;--stone-i:#b0b1b4}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -44,7 +45,7 @@ header{text-align:center;margin-bottom:28px}
 h1{font-size:24px;font-weight:600;margin:0 0 4px}
 .tagline{color:var(--muted);margin:0 auto;max-width:42ch}
 .now{color:var(--muted);font-size:13px;margin:8px auto 0;max-width:46ch}
-h2{font-size:14px;font-weight:500;color:var(--muted);margin:36px 0 12px}
+h2{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:36px 0 12px}
 .cta{display:flex;gap:8px;justify-content:center;margin-top:20px}
 .btn{flex:1;max-width:168px;text-align:center;text-decoration:none;font-weight:500;padding:12px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--fg);transition:background-color .15s ease-out}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
@@ -61,7 +62,7 @@ details summary::before{content:"▸ "}details[open]>summary::before{content:"�
 /* ---- the home-screen grid ---- */
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-flow:row dense;gap:12px}
 .tile{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:8px;min-width:0;
-  padding:16px;border-radius:20px;background:var(--t,var(--card));border:1px solid var(--line);color:inherit;text-decoration:none;
+  padding:16px;border-radius:16px;background:var(--t,var(--card));border:1px solid var(--line);color:inherit;text-decoration:none;
   overflow:hidden;transition:transform .15s ease-out,background-color .15s ease-out}
 a.tile:hover{transform:translateY(-2px)}
 a.tile:focus-visible,.tile a:focus-visible,.btn:focus-visible,.theme:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -102,7 +103,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
 /* phone: two columns, wide tiles keep the full row */
 @media (max-width:560px){
   .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .tile{padding:14px;border-radius:18px}
+  .tile{padding:14px;border-radius:14px}
   .w{aspect-ratio:auto;min-height:132px}
   .l b{font-size:20px}
 }
@@ -122,6 +123,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
 <symbol id="i-euro" viewBox="0 0 24 24"><path d="M4 10h12"/><path d="M4 14h9"/><path d="M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2"/></symbol>
 <symbol id="i-filecheck" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h6"/><path d="m9 15 2 2 4-4"/></symbol>
 <symbol id="i-briefcase" viewBox="0 0 24 24"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></symbol>
+<symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2.1 6.3-6.3 2.1 2.1-6.3z"/></symbol>
 <symbol id="i-mountain" viewBox="0 0 24 24"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></symbol>
 <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
 <symbol id="i-insta" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5"/></symbol>
@@ -170,26 +172,35 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
 
 <h2>Travel and weekly plans</h2>
 <div class="grid">
-  <a class="tile w stone" href="https://exploretatra.com" target="_blank" rel="noopener">
-    <div class="ico" aria-hidden="true"><svg><use href="#i-mountain"/></svg></div>
-    <div><b>Explore Tatra</b><span class="sub">Trails, stays and tours around Zakopane</span></div>
-    <span class="arrow" aria-hidden="true">↗</span>
-  </a>
-  <a class="tile w sand" href="https://menorcaplan.com" target="_blank" rel="noopener">
-    <div class="ico" aria-hidden="true"><svg><use href="#i-sun"/></svg></div>
-    <div><b>Menorca Plan</b><span class="sub">Beaches, Talayotic heritage, what to book</span></div>
-    <span class="arrow" aria-hidden="true">↗</span>
-  </a>
-  <a class="tile w leaf" href="https://sloveniaplan.com" target="_blank" rel="noopener">
-    <div class="ico" aria-hidden="true"><svg><use href="#i-waves"/></svg></div>
-    <div><b>Slovenia Plan</b><span class="sub">Day trips from Ljubljana: Bled, Bohinj, Postojna</span></div>
-    <span class="arrow" aria-hidden="true">↗</span>
-  </a>
-  <a class="tile w leaf" href="https://capeverdeplan.com" target="_blank" rel="noopener">
-    <div class="ico" aria-hidden="true"><svg><use href="#i-sun"/></svg></div>
-    <div><b>Cape Verde Plan</b><span class="sub">Island hopping guide: Sal, Boa Vista, Santo Ant&atilde;o (EN + FR)</span></div>
-    <span class="arrow" aria-hidden="true">↗</span>
-  </a>
+  <details class="tile sea group">
+    <summary>
+      <div class="ico" aria-hidden="true"><svg><use href="#i-compass"/></svg></div>
+      <div><b>Travel guides</b><span class="sub">Zakopane and the Tatras, Menorca, Slovenia, Cape Verde</span></div>
+      <span class="badge">4 sites</span>
+    </summary>
+    <div class="grid inner">
+    <a class="tile w stone" href="https://exploretatra.com" target="_blank" rel="noopener">
+      <div class="ico" aria-hidden="true"><svg><use href="#i-mountain"/></svg></div>
+      <div><b>Explore Tatra</b><span class="sub">Trails, stays and tours around Zakopane</span></div>
+      <span class="arrow" aria-hidden="true">↗</span>
+    </a>
+    <a class="tile w sand" href="https://menorcaplan.com" target="_blank" rel="noopener">
+      <div class="ico" aria-hidden="true"><svg><use href="#i-sun"/></svg></div>
+      <div><b>Menorca Plan</b><span class="sub">Beaches, Talayotic heritage, what to book</span></div>
+      <span class="arrow" aria-hidden="true">↗</span>
+    </a>
+    <a class="tile w leaf" href="https://sloveniaplan.com" target="_blank" rel="noopener">
+      <div class="ico" aria-hidden="true"><svg><use href="#i-waves"/></svg></div>
+      <div><b>Slovenia Plan</b><span class="sub">Day trips from Ljubljana: Bled, Bohinj, Postojna</span></div>
+      <span class="arrow" aria-hidden="true">↗</span>
+    </a>
+    <a class="tile w leaf" href="https://capeverdeplan.com" target="_blank" rel="noopener">
+      <div class="ico" aria-hidden="true"><svg><use href="#i-sun"/></svg></div>
+      <div><b>Cape Verde Plan</b><span class="sub">Island hopping guide: Sal, Boa Vista, Santo Ant&atilde;o (EN + FR)</span></div>
+      <span class="arrow" aria-hidden="true">↗</span>
+    </a>
+    </div>
+  </details>
   <div class="tile w widget sea">
     <div class="head"><div class="ico" aria-hidden="true"><svg><use href="#i-send"/></svg></div>
       <div><b>Weekly plans</b><span class="sub">Free "what's on" briefs on Telegram, every Friday</span></div></div>
