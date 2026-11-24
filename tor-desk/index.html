@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ToR Desk demo</title>
+<meta name="description" content="ToR Desk: reads a terms of reference and gives GO / GO IF / NO-GO, changes, knock-outs, contradictions and red flags.">
+<link rel="stylesheet" href="app.css">
+<style>
+body.demo #rescore, body.demo #prof, body.demo a[href^="/api/"] { display: none; }
+.demo-intro { display: block; line-height: 1.5; }
+</style>
+</head>
+<body class="demo">
+<header class="top">
+  <a class="brand" href="#/">ToR Desk</a>
+  
+  <span class="spacer"></span>
+  <span class="hint">Demo · sample report</span>
+</header>
+<main>
+<div class="banner demo-intro"><div><b>Read-only demo.</b> A public EBRD terms of reference
+(Romania, innovation financing, 2020) read and scored against an anonymised consulting firm whose profile was built
+from its website. Open the tabs: requirements, contradictions, red flags, scoring. Edits stay in your tab; nothing is sent.
+<br>ToR Desk turns any ToR, call or concept note into a GO / GO IF / NO-GO with the changes to make, for a firm or for one expert's CV.</div></div>
+<div id="view" data-no-edit></div>
+</main>
+<div class="toast" id="toast"></div>
+<script src="demo-data.js"></script>
+<script src="app.js"></script>
+<!-- style-panel:start v3 (master: ~/.claude/snippets/style-panel.html; update every copy with ~/.claude/snippets/sync-style-panel.py) -->
+<!-- Paste just before </body>. Self-contained, no external calls, works in artifacts. The edit panel (2026-11-10):
+     lets the viewer edit the page's text, its :root colour variables, text size and font; saved in this browser,
+     per page (colours per light/dark mode); "Download HTML" saves the page with the edits applied and the panel removed.
+     Fires a "stylepanel:change" event on window so charts can redraw (listen and call your redraw function).
+     Text edits suit pages whose text is in the HTML; on a page that rebuilds its content from data, edits to rebuilt
+     parts are kept only while that text is unchanged underneath, so change those in the data instead. -->
+<script>
+(() => {
+  const KEY = "style-panel:" + location.pathname, root = document.documentElement;
+  const blank = () => ({ light: {}, dark: {}, size: 100, font: "", text: {} });
+  let st; try { st = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY))); } catch { st = blank(); }
+  let timer;
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} };
+  const changed = () => { clearTimeout(timer); timer = setTimeout(() => { save(); dispatchEvent(new Event("stylepanel:change")); }, 150); };
+  const mode = () => root.dataset.theme === "dark" || (root.dataset.theme !== "light" && matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+
+  // Main colours, found by common variable names; everything else goes under "More colours"
+  const ROLES = [["Background", "--bg --background --page"], ["Cards and panels", "--card --surface --panel"], ["Text", "--fg --text --ink"],
+    ["Soft text", "--muted --text-2 --text-muted"], ["Accent", "--accent --primary --brand"], ["Lines", "--line --border"]];
+  const PRESETS = { // role order as ROLES; [light, dark]
+    Calm: [["#f4f6f4", "#ffffff", "#1f2a24", "#5f6f66", "#2f855a", "#dde5df"], ["#121714", "#1a211d", "#e6efe9", "#93a39a", "#68d391", "#2a352f"]],
+    Warm: [["#faf5ee", "#fffdf9", "#2b2118", "#7a6a5a", "#c2541d", "#ecdfcf"], ["#1a1512", "#231c17", "#f3e9df", "#b3a291", "#f08a4b", "#3a2f27"]],
+    "High contrast": [["#ffffff", "#ffffff", "#000000", "#333333", "#0039c6", "#000000"], ["#000000", "#0a0a0a", "#ffffff", "#d0d0d0", "#7fb2ff", "#ffffff"]] };
+
+  // Text editing: elements are found by their place in the page; an edit comes back only while
+  // the element's original text is unchanged (a guard for pages that rebuild their content)
+  const TSEL = "h1,h2,h3,h4,h5,h6,p,li,td,th,dt,dd,figcaption,blockquote,caption";
+  const els = () => [...document.body.querySelectorAll(TSEL)].filter(e => !e.closest("script,style,[data-no-edit]") && !(e.parentElement && e.parentElement.closest(TSEL)));
+  const sig = s => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0; return h.toString(36) + ":" + s.length; };
+  const orig = new WeakMap(); let editing = false;
+  function applyText() {
+    const ids = Object.keys(st.text); if (!ids.length) return;
+    els().forEach((e, i) => { const t = st.text[i]; if (!t || orig.has(e)) return;
+      if (sig(e.textContent) === t.o) { orig.set(e, t.o); e.innerHTML = t.h; } });
+  }
+  function setEditing(on) {
+    editing = on;
+    els().forEach(e => { if (on) { if (!orig.has(e)) orig.set(e, sig(e.textContent)); e.contentEditable = "true"; e.dataset.spEdit = ""; } else if ("spEdit" in e.dataset) { e.removeAttribute("contenteditable"); delete e.dataset.spEdit; } });
+    root.classList.toggle("sp-editing", on);
+  }
+  document.addEventListener("input", e => {
+    const el = e.target.closest && e.target.closest("[data-sp-edit]"); if (!el) return;
+    const i = els().indexOf(el); if (i < 0) return;
+    const o = st.text[i] ? st.text[i].o : orig.get(el); if (!o) return;
+    st.text[i] = { o, h: el.innerHTML }; changed(); if (box) count();
+  });
+  document.addEventListener("paste", e => { if (!editing || !(e.target.closest && e.target.closest("[data-sp-edit]"))) return;
+    e.preventDefault(); document.execCommand("insertText", false, (e.clipboardData || window.clipboardData).getData("text/plain")); });
+  const editCss = document.createElement("style"); editCss.dataset.spRemove = "";
+  editCss.textContent = ".sp-editing [data-sp-edit]{outline:1px dashed color-mix(in srgb,currentColor 35%,transparent);outline-offset:2px;cursor:text}.sp-editing [data-sp-edit]:focus{outline:2px solid Highlight}";
+  document.head.appendChild(editCss);
+
+  // Apply only what's stored: no stylesheet scan on page load
+  let last = null;
+  const allKeys = () => new Set([...Object.keys(st.light), ...Object.keys(st.dark)]);
+  function apply(force) {
+    const m = mode(); if (!force && m === last) return;
+    const keys = allKeys(), switched = last && m !== last; last = m;
+    keys.forEach(n => root.style.removeProperty(n));
+    for (const [n, v] of Object.entries(st[m])) root.style.setProperty(n, v);
+    document.body.style.zoom = st.size === 100 ? "" : st.size + "%";
+    document.body.style.fontFamily = st.font;
+    if (box && !box.hidden) fill();
+    if (switched && keys.size) dispatchEvent(new Event("stylepanel:change")); // charts redraw with this mode's colours
+  }
+
+  // Colour variables and their built-in values (only when the panel opens)
+  let names;
+  const ctx = document.createElement("canvas").getContext("2d");
+  const toHex = v => { ctx.fillStyle = "#010203"; ctx.fillStyle = v; const h = ctx.fillStyle; return /^#[0-9a-f]{6}$/i.test(h) && (h !== "#010203" || v === "#010203") ? h : null; };
+  function builtIn() {
+    if (!names) { names = [];
+      const walk = rules => { for (const r of rules) { if (r.cssRules) walk(r.cssRules);
+        if (r.selectorText && r.selectorText.includes(":root")) for (const p of r.style) if (p.startsWith("--") && !names.includes(p)) names.push(p); } };
+      for (const s of document.styleSheets) { try { walk(s.cssRules); } catch {} } }
+    const saved = names.map(n => root.style.getPropertyValue(n)); names.forEach(n => root.style.removeProperty(n));
+    const cs = getComputedStyle(root), out = {};
+    names.forEach(n => { const h = toHex(cs.getPropertyValue(n).trim()); if (h) out[n] = h; });
+    names.forEach((n, i) => saved[i] && root.style.setProperty(n, saved[i]));
+    return out;
+  }
+
+  const host = document.createElement("div"); host.dataset.spRemove = "";
+  host.style.cssText = "position:fixed;right:calc(14px + env(safe-area-inset-right, 0px));bottom:calc(14px + env(safe-area-inset-bottom, 0px));z-index:2147483000";
+  const sh = host.attachShadow({ mode: "open" });
+  sh.innerHTML = `<style>:host{font:13px/1.4 system-ui,-apple-system,sans-serif;color-scheme:light dark}
+    button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid #8884;background:Canvas;color:CanvasText;padding:5px 10px}
+    button[aria-pressed=true]{background:Highlight;color:HighlightText}
+    .fab{width:40px;height:40px;border-radius:50%;font-size:18px;padding:0;box-shadow:0 2px 10px #0003}</style>
+    <button class="fab" title="Edit: text, colours and size" aria-label="Edit text, colours and size" aria-expanded="false">✏️</button>`;
+  const fab = sh.querySelector(".fab"); let box, roleOf;
+
+  function build() { // panel built on first open only: a right-hand drawer, a bottom sheet on narrow screens
+    const t = document.createElement("template");
+    t.innerHTML = `<style>
+      .box{position:fixed;top:0;right:0;bottom:0;width:min(320px,100vw);overflow:auto;box-sizing:border-box;
+        background:Canvas;color:CanvasText;border-left:1px solid #8884;padding:14px 16px calc(70px + env(safe-area-inset-bottom,0px));box-shadow:-8px 0 30px #0003}
+      @media (max-width:700px){.box{top:auto;left:0;width:auto;max-height:62vh;border-left:0;border-top:1px solid #8884;border-radius:14px 14px 0 0;box-shadow:0 -8px 30px #0003}}
+      .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+      h3{margin:0;font-size:15px} h4{margin:14px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;opacity:.7}
+      label{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 0}
+      input[type=color]{width:42px;height:26px;border:1px solid #8884;border-radius:6px;padding:0;background:none;flex:none}
+      input[type=range]{flex:1} select{font:inherit;padding:3px 6px;border-radius:6px}
+      summary{cursor:pointer;margin-top:10px;opacity:.8} .row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+      .note{opacity:.65;font-size:11px;margin-top:8px} .ch{color:#d9480f;font-weight:700} .m{font-weight:400;opacity:.6;font-size:12px}</style>
+    <div class="box" hidden role="dialog" aria-label="Edit">
+      <div class="head"><h3>Edit <span class="m" id="m"></span></h3><button id="close" aria-label="Close">✕</button></div>
+      <h4>Text</h4>
+      <div class="row"><button id="edit" aria-pressed="false">Edit text</button><span class="m" id="tc"></span></div>
+      <h4>Size and font</h4>
+      <label>Text and spacing <input type="range" id="size" min="80" max="150" step="5"><span id="sv"></span></label>
+      <label>Font <select id="font"><option value="">As built</option><option value="system-ui,-apple-system,sans-serif">System</option>
+        <option value="Georgia,Times,serif">Serif</option><option value="ui-monospace,Menlo,monospace">Mono</option></select></label>
+      <h4>Quick looks</h4><div class="row" id="presets"></div>
+      <h4>Main colours</h4><div id="main"></div>
+      <details><summary>More colours</summary><div id="more"></div></details>
+      <h4>Keep it</h4>
+      <div class="row"><button id="dl">Download HTML</button><button id="copy">Copy changes</button><button id="reset">Reset</button></div>
+      <div class="note">Saved in this browser only. Colours apply to the mode you're in (light or dark). "Download HTML" saves this page with your edits and without this panel; "Copy changes" gives text to paste to Claude to make them permanent at the source.</div>
+    </div>`;
+    sh.append(t.content);
+    box = sh.querySelector(".box");
+    sh.querySelector("#presets").innerHTML = Object.keys(PRESETS).map(p => `<button data-p="${p}">${p}</button>`).join("");
+    sh.addEventListener("input", onInput);
+    sh.addEventListener("click", onClick);
+  }
+  const count = () => { const n = Object.keys(st.text).length; sh.querySelector("#tc").textContent = n ? n + " edited" : ""; };
+  const pretty = n => n.slice(2).replace(/[-_]/g, " ").replace(/\bbg\b/, "background").replace(/\bfg\b/, "text");
+  const pick = (n, label, cur, base) => `<label><span class="${cur[n] ? "ch" : ""}">${label}</span><input type="color" data-n="${n}" value="${cur[n] || base[n]}"></label>`;
+  function fill() {
+    const m = mode(), cur = st[m], base = builtIn(), used = new Set();
+    roleOf = ROLES.map(([, alts]) => alts.split(" ").find(n => base[n] && !used.has(n) && used.add(n)));
+    const $ = s => sh.querySelector(s);
+    $("#m").textContent = "· " + m + " mode";
+    $("#size").value = st.size; $("#sv").textContent = st.size + "%"; $("#font").value = st.font;
+    $("#main").innerHTML = ROLES.map(([label], i) => roleOf[i] ? pick(roleOf[i], label, cur, base) : "").join("") || `<div class="note">No main colours recognised; see More colours.</div>`;
+    $("#more").innerHTML = Object.keys(base).filter(n => !used.has(n)).map(n => pick(n, pretty(n), cur, base)).join("") || `<div class="note">None.</div>`;
+    count();
+  }
+  function onInput(e) {
+    const t = e.target;
+    if (t.dataset.n) { st[mode()][t.dataset.n] = t.value; root.style.setProperty(t.dataset.n, t.value); t.previousElementSibling.className = "ch"; }
+    if (t.id === "size") { st.size = +t.value; sh.querySelector("#sv").textContent = st.size + "%"; document.body.style.zoom = st.size === 100 ? "" : st.size + "%"; }
+    if (t.id === "font") { st.font = t.value; document.body.style.fontFamily = st.font; }
+    changed();
+  }
+  function pageHtml() { // the page as edited, panel and edit marks removed
+    const c = root.cloneNode(true);
+    c.querySelectorAll("[data-sp-remove]").forEach(n => n.remove());
+    c.querySelectorAll("script").forEach(s => { if (s.textContent.includes('"style-panel:"')) s.remove(); });
+    c.querySelectorAll("[data-sp-edit]").forEach(n => { n.removeAttribute("contenteditable"); delete n.dataset.spEdit; });
+    c.classList.remove("sp-editing"); if (!c.classList.length) c.removeAttribute("class");
+    return "<!doctype html>\n" + c.outerHTML.replace(/<!-- style-panel:(start|end)[^>]*-->/g, "");
+  }
+  async function download(btn) {
+    const name = (document.title || "page").replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "-").slice(0, 60) + ".html", html = pageHtml();
+    try { const d = window.claude && await Promise.race([window.claude.use("downloads"), new Promise(r => setTimeout(r, 1500))]);
+      if (d) { await d.save({ filename: name, data: html }); return; } } catch {}
+    try { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([html], { type: "text/html" })); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      btn.textContent = "Downloaded"; } catch { btn.textContent = "Blocked here"; }
+    setTimeout(() => btn.textContent = "Download HTML", 2000);
+  }
+  async function onClick(e) {
+    const t = e.target;
+    if (t.id === "close") { fab.click(); return; }
+    if (t.id === "edit") { setEditing(!editing); t.setAttribute("aria-pressed", editing); t.textContent = editing ? "Done editing" : "Edit text"; }
+    if (t.id === "dl") { const was = editing; if (was) setEditing(false); await download(t); if (was) setEditing(true); }
+    if (t.dataset.p) { const m = mode(), vals = PRESETS[t.dataset.p][m === "dark" ? 1 : 0];
+      roleOf.forEach((n, i) => { if (n) st[m][n] = vals[i]; }); apply(true); changed(); }
+    if (t.id === "reset") { if (!confirm("Undo all your edits to this page (text, colours, size)?")) return;
+      const hadText = Object.keys(st.text).length; allKeys().forEach(n => root.style.removeProperty(n)); st = blank(); save();
+      if (hadText) { location.reload(); return; } apply(true); changed(); }
+    if (t.id === "copy") {
+      const txt = `Edits to "${document.title}":\n` + ["light", "dark"].flatMap(m => Object.entries(st[m]).map(([n, v]) => `${m}: ${n} → ${v}`))
+        .concat(st.size !== 100 ? [`text size ${st.size}%`] : [], st.font ? [`font ${st.font}`] : [],
+          Object.entries(st.text).map(([i, v]) => { const d = document.createElement("div"); d.innerHTML = v.h; return `text #${i} → ${d.textContent.trim().slice(0, 300)}`; })).join("\n");
+      try { await navigator.clipboard.writeText(txt); t.textContent = "Copied"; } catch { prompt("Copy this:", txt); }
+      setTimeout(() => t.textContent = "Copy changes", 1500);
+    }
+  }
+  fab.onclick = () => { if (!box) build(); box.hidden = !box.hidden; fab.setAttribute("aria-expanded", !box.hidden); if (!box.hidden) fill(); };
+  addEventListener("keydown", e => { if (e.key === "Escape" && box && !box.hidden && !e.target.isContentEditable) fab.click(); });
+
+  root.appendChild(host);
+  apply(true); applyText();
+  addEventListener("load", applyText); setTimeout(applyText, 1500); // late-rendered content
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => apply());
+  new MutationObserver(() => apply()).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+})();
+</script>
+<!-- style-panel:end -->
+</body>
+</html>
